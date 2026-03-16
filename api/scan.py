@@ -3,7 +3,6 @@ import httpx
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 from http.server import BaseHTTPRequestHandler
-from urllib.parse import urljoin
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -17,38 +16,51 @@ class handler(BaseHTTPRequestHandler):
             return
 
         try:
-            # 1. Fetch the page (with a user-agent to avoid blocks)
+            # 1. INGESTION (Carolyna): Fetch raw HTML
             headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-            response = httpx.get(url, headers=headers, timeout=10.0, follow_redirects=True)
-            
-            # 2. Parse with BeautifulSoup
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # 3. Extract Images & Metadata (Since we can't do a full screenshot)
-            images = []
-            for img in soup.find_all('img'):
-                src = img.get('src')
-                alt = img.get('alt', 'MISSING')
-                if src:
-                    images.append({
-                        "url": urljoin(url, src),
-                        "alt": alt,
-                        "accessible": alt != 'MISSING'
-                    })
+            res = httpx.get(url, headers=headers, timeout=10.0, follow_redirects=True)
+            soup = BeautifulSoup(res.text, 'html.parser')
 
-            # 4. Convert HTML to Markdown for your AI persona engine
-            # We strip scripts and styles to keep it clean
+            # 2. CHECKER (Julia): Extract Visual Metadata & Issues
+            image_data = []
+            issues = []
+            
+            # Image Check
+            imgs = soup.find_all('img')
+            for img in imgs:
+                alt = img.get('alt')
+                image_data.append({
+                    "src": img.get('src'),
+                    "alt": alt if alt else "MISSING"
+                })
+            
+            missing_alt_count = len([i for i in image_data if i['alt'] == "MISSING"])
+            if missing_alt_count > 0:
+                issues.append(f"{missing_alt_count} images are missing alt text descriptions.")
+
+            # Structure Check
+            headings = [h.name for h in soup.find_all(['h1', 'h2', 'h3', 'h4'])]
+            if 'h1' not in headings:
+                issues.append("Page is missing an H1 main heading.")
+
+            # 3. REASONING PREP: Convert to Markdown
+            # Strip scripts/styles for a cleaner LLM context
             for script in soup(["script", "style"]):
                 script.decompose()
-            
             clean_markdown = md(str(soup), heading_style="ATX")
 
-            # 5. Return the payload
+            # EXPLICIT RETURN OBJECT
             payload = {
+                "status": "success",
                 "url": url,
-                "markdown": clean_markdown[:10000], # Truncate to save bandwidth
-                "images": images,
-                "status": "success"
+                "markdown": clean_markdown[:8000],  # Structured text for Asmita
+                "issues": issues,                   # The Julia Agent's "Problem List"
+                "visual_manifest": {                # The "Synthetic Screenshot"
+                    "image_count": len(imgs),
+                    "image_details": image_data,
+                    "headings": headings,
+                    "vibe_check": "Analyzed via structural metadata"
+                }
             }
 
             self.send_response(200)
@@ -58,5 +70,6 @@ class handler(BaseHTTPRequestHandler):
 
         except Exception as e:
             self.send_response(500)
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
