@@ -1,0 +1,38 @@
+<script>
+/* DYSLEXIA MODE */
+const toggle = document.getElementById("dyslexia-toggle");
+toggle.addEventListener("click", function() {
+    document.body.classList.toggle("dyslexia-mode");
+});
+
+/* URL FORM SUBMISSION */
+document.getElementById("scan-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    
+    const url = document.getElementById("website-url").value;
+    const btn = e.target.querySelector('button');
+    
+    btn.innerText = "Scanning...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch("/api/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: url })
+        });
+        
+        const result = await response.json();
+        console.log("Scan Results:", result);
+        alert("Scan complete! Output received in console.");
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Scan failed. Check console for details.");
+    } finally {
+        btn.innerText = "Run Accessibility Scan";
+        btn.disabled = false;
+    }
+});
+</script>
+</body>
+</html>
