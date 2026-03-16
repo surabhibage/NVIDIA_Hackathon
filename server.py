@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from crawler import crawl_sync
+from accessiscan.api.crawler import crawl_sync
 
 app = Flask(__name__)
 
