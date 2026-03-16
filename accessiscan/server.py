@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify
 from crawler import crawl_sync
-# from persona_engine import simulate_persona
-# from personas import PERSONA_REGISTRY
 
 app = Flask(__name__)
 
@@ -9,20 +7,25 @@ app = Flask(__name__)
 @app.route("/scan", methods=["POST"])
 def scan():
 
-    url = request.json["url"]
+    data = request.json
+    url = data["url"]
 
-    # Crawl website
-    site_data = crawl_sync(url)
+    try:
 
-    # persona_results = []
+        site_data = crawl_sync(url)
 
-    # Run persona agents
-    # for persona in PERSONA_REGISTRY:
+        return jsonify({
+            "status": "success",
+            "text_length": len(site_data["markdown"]),
+            "screenshot_captured": site_data["screenshot"] is not None
+        })
 
-    #     result = simulate_persona(persona, site_data)
-    #     persona_results.append(result)
+    except Exception as e:
 
-    # return jsonify(persona_results)
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        })
 
 
 if __name__ == "__main__":
