@@ -1,40 +1,62 @@
-from http.server import BaseHTTPRequestHandler
 import json
-import asyncio
-from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
-
-async def get_crawl_data(url):
-    async with AsyncWebCrawler() as crawler:
-        config = CrawlerRunConfig(
-            screenshot=False, # Set to False for faster serverless execution
-            word_count_threshold=10
-        )
-        result = await crawler.arun(url=url, config=config)
-        return {
-            "markdown": result.markdown[:5000], # Truncate for response limits
-            "status": "success"
-        }
+import httpx
+from bs4 import BeautifulSoup
+from markdownify import markdownify as md
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import urljoin
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-        data = json.loads(post_data)
-        url = data.get("url")
+        url = json.loads(post_data).get("url")
 
         if not url:
             self.send_response(400)
             self.end_headers()
             return
 
-        # Run the async crawler in the synchronous handler
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(get_crawl_data(url))
-        loop.close()
+        try:
+            # 1. Fetch the page (with a user-agent to avoid blocks)
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+            response = httpx.get(url, headers=headers, timeout=10.0, follow_redirects=True)
+            
+            # 2. Parse with BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # 3. Extract Images & Metadata (Since we can't do a full screenshot)
+            images = []
+            for img in soup.find_all('img'):
+                src = img.get('src')
+                alt = img.get('alt', 'MISSING')
+                if src:
+                    images.append({
+                        "url": urljoin(url, src),
+                        "alt": alt,
+                        "accessible": alt != 'MISSING'
+                    })
 
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(result).encode())
-        return
+            # 4. Convert HTML to Markdown for your AI persona engine
+            # We strip scripts and styles to keep it clean
+            for script in soup(["script", "style"]):
+                script.decompose()
+            
+            clean_markdown = md(str(soup), heading_style="ATX")
+
+            # 5. Return the payload
+            payload = {
+                "url": url,
+                "markdown": clean_markdown[:10000], # Truncate to save bandwidth
+                "images": images,
+                "status": "success"
+            }
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode())
+
+        except Exception as e:
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
