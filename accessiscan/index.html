@@ -489,5 +489,26 @@ document.body.classList.toggle("dyslexia-mode")
 
 </script>
 
+document.getElementById("scan-form").addEventListener("submit", async function(e){
+
+    e.preventDefault()
+    
+    const url = document.getElementById("website-url").value
+    
+    const response = await fetch("http://127.0.0.1:5000/scan",{
+    
+    method:"POST",
+    headers:{ "Content-Type":"application/json"},
+    body:JSON.stringify({url:url})
+    
+    })
+    
+    const result = await response.json()
+    
+    console.log(result)
+    
+    alert("Scan complete. Check console for persona feedback.")
+    
+    })
 </body>
 </html>
