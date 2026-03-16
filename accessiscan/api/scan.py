@@ -1,5 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler
+from crawler import crawl_sync
+
 
 class handler(BaseHTTPRequestHandler):
 
@@ -11,9 +13,12 @@ class handler(BaseHTTPRequestHandler):
 
         url = data["url"]
 
+        result = crawl_sync(url)
+
         response = {
             "status": "success",
-            "received_url": url
+            "text_length": len(result["markdown"]),
+            "screenshot": result["screenshot"] is not None
         }
 
         self.send_response(200)

@@ -1,327 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AccessiScan — AI-Powered Accessibility Testing</title>
+<title>AccessiScan — AI Accessibility Testing</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
-/* RESET */
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
 }
 
-html{
-font-size:100%;
-scroll-behavior:smooth;
-}
-
 body{
 font-family:'Atkinson Hyperlegible','Open Sans',sans-serif;
-line-height:1.8;
-color:#222;
 background:#fafafa;
+line-height:1.7;
+color:#222;
 }
-
-/* COLORS */
 
 :root{
 --primary:#0066cc;
 --secondary:#ff6b35;
+--border:#dee2e6;
 --light:#f8f9fa;
 --dark:#212529;
---border:#dee2e6;
---text-muted:#6c757d;
---bg-card:#ffffff;
 }
-
-/* GENERAL */
 
 .container{
 width:90%;
-max-width:1200px;
+max-width:1100px;
 margin:auto;
 padding:2rem 0;
 }
 
-h1,h2,h3{
-margin-bottom:.5rem;
-}
-
-p{
-margin-bottom:1.5rem;
-}
-
-a{
-color:var(--primary);
-text-decoration:none;
-}
-
-a:hover{
-text-decoration:underline;
-}
-
-/* HEADER */
-
 header{
 background:white;
 border-bottom:1px solid var(--border);
-position:sticky;
-top:0;
-z-index:100;
 }
 
 header .container{
 display:flex;
 justify-content:space-between;
 align-items:center;
-flex-wrap:wrap;
 }
 
 .logo{
-display:flex;
-align-items:center;
-gap:.75rem;
+font-size:1.4rem;
 font-weight:700;
-font-size:1.5rem;
 color:var(--primary);
 }
-
-.logo-icon{
-width:32px;
-height:32px;
-background:var(--primary);
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-font-weight:bold;
-}
-
-nav ul{
-display:flex;
-list-style:none;
-gap:1.5rem;
-}
-
-nav a{
-padding:.5rem .75rem;
-border-radius:6px;
-}
-
-nav a:hover{
-background:var(--light);
-}
-
-/* HERO */
 
 .hero{
 background:var(--light);
-padding:4rem 0;
 text-align:center;
+padding:4rem 0;
 }
 
 .hero h1{
-font-size:2.2rem;
+font-size:2rem;
 margin-bottom:1rem;
-max-width:800px;
-margin:auto;
 }
 
 .hero p{
-font-size:1.1rem;
-max-width:700px;
+max-width:600px;
 margin:auto;
-color:var(--text-muted);
 margin-bottom:2rem;
+color:#666;
 }
-
-/* BUTTONS */
-
-.btn-primary{
-background:var(--primary);
-color:white;
-border:none;
-padding:1rem 2rem;
-font-size:1rem;
-font-weight:600;
-border-radius:8px;
-}
-
-.btn-secondary{
-background:transparent;
-color:var(--primary);
-border:2px solid var(--primary);
-padding:.8rem 1.5rem;
-border-radius:8px;
-}
-
-/* URL FORM */
 
 .url-input{
 width:100%;
 padding:1rem;
-font-size:1rem;
 border-radius:8px;
 border:1px solid var(--border);
+font-size:1rem;
 margin-bottom:1rem;
 }
 
-/* FEATURES */
+button{
+background:var(--primary);
+color:white;
+border:none;
+padding:1rem 2rem;
+border-radius:8px;
+font-size:1rem;
+cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
+}
 
 .features{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:2rem;
 margin-top:3rem;
 }
 
-.feature-card{
-background:var(--bg-card);
-border:1px solid var(--border);
-border-radius:12px;
-padding:2rem;
-text-align:center;
-}
-
-.feature-icon{
-width:60px;
-height:60px;
-margin:auto;
-margin-bottom:1.5rem;
-display:flex;
-align-items:center;
-justify-content:center;
-background:var(--light);
-border-radius:50%;
-font-size:1.8rem;
-color:var(--primary);
-}
-
-/* STATS */
-
-.stats{
-background:var(--primary);
-color:white;
-padding:3rem 0;
-text-align:center;
-}
-
-.stats .container{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:2rem;
-}
-
-.stat-number{
-font-size:2.8rem;
-font-weight:700;
-display:block;
-}
-
-.stat-label{
-font-size:1rem;
-}
-
-/* CTA */
-
-.cta-section{
-text-align:center;
-padding:4rem 0;
+.card{
 background:white;
+padding:2rem;
+border-radius:10px;
+border:1px solid var(--border);
+text-align:center;
 }
 
-/* FOOTER */
+.status{
+margin-top:1rem;
+font-weight:bold;
+}
 
-.footer{
+.result{
+margin-top:2rem;
+padding:1rem;
+background:white;
+border:1px solid var(--border);
+border-radius:8px;
+display:none;
+}
+
+footer{
 background:var(--dark);
 color:white;
-padding:2.5rem 0;
-}
-
-.footer .container{
-display:flex;
-flex-wrap:wrap;
-justify-content:space-between;
-gap:2rem;
-}
-
-.footer-section{
-min-width:180px;
-}
-
-.footer-section h4{
-margin-bottom:1rem;
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-header .container{
-flex-direction:column;
-}
-
-.hero h1{
-font-size:1.7rem;
-}
-
+padding:2rem;
+text-align:center;
+margin-top:3rem;
 }
 
 </style>
-
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 
 </head>
 
 <body>
 
-<!-- HEADER -->
-
 <header>
 <div class="container">
-
-<div class="logo">
-<div class="logo-icon">A</div>
-<div>
-<div>AccessiScan</div>
-<div style="font-size:.9rem;color:var(--text-muted)">AI-Powered Accessibility Testing</div>
-</div>
-</div>
-
-<nav>
-<ul>
-<li><a href="#features">Features</a></li>
-<li><a href="#how-it-works">How It Works</a></li>
-<li><a href="#pricing">Pricing</a></li>
-<li><button class="btn-secondary" id="dyslexia-toggle">Dyslexia Mode</button></li>
-</ul>
-</nav>
-
+<div class="logo">AccessiScan</div>
 </div>
 </header>
 
-<!-- HERO -->
 
 <section class="hero">
 
 <div class="container">
 
-<h1>Test Your Website Through the Eyes of 10,000 Real Users</h1>
+<h1>AI Accessibility Testing</h1>
 
 <p>
-Our AI generates diverse personas to simulate accessibility experiences
-including elderly users, low vision users, dyslexia, and screen reader users.
+Test your website using AI-powered accessibility simulations including low vision,
+screen readers, dyslexia users, and elderly navigation patterns.
 </p>
 
-<form id="scan-form" style="max-width:600px;margin:auto">
-
-<label for="website-url"><strong>Enter your website URL</strong></label>
+<form id="scan-form">
 
 <input
 class="url-input"
@@ -331,184 +169,103 @@ placeholder="https://example.com"
 required
 >
 
-<button class="btn-primary" type="submit">
-Run Accessibility Scan
-</button>
+<button type="submit">Run Accessibility Scan</button>
 
 </form>
 
+<div id="status" class="status"></div>
+
+<div id="result" class="result"></div>
+
 </div>
 
 </section>
 
-<!-- FEATURES -->
 
-<section id="features" class="container">
+<section class="container">
+
+<h2 style="text-align:center">Features</h2>
 
 <div class="features">
 
-<div class="feature-card">
-<div class="feature-icon">👁️</div>
-<h3>Vision Impairment Simulation</h3>
-<p>Tests color contrast and font scaling against WCAG 2.2 guidelines.</p>
+<div class="card">
+<h3>Vision Impairment Testing</h3>
+<p>Check color contrast and visual accessibility issues.</p>
 </div>
 
-<div class="feature-card">
-<div class="feature-icon">📖</div>
-<h3>Dyslexia Testing</h3>
-<p>Evaluates readability and font spacing for dyslexic users.</p>
+<div class="card">
+<h3>Dyslexia Mode</h3>
+<p>Evaluate readability and spacing for dyslexic users.</p>
 </div>
 
-<div class="feature-card">
-<div class="feature-icon">👵</div>
-<h3>Elderly UX Simulation</h3>
-<p>Tests navigation clarity and button size for aging users.</p>
-</div>
-
-<div class="feature-card">
-<div class="feature-icon">🔊</div>
+<div class="card">
 <h3>Screen Reader Testing</h3>
-<p>Checks alt text, ARIA labels, and reading order.</p>
+<p>Validate ARIA labels and semantic structure.</p>
+</div>
+
+<div class="card">
+<h3>Elderly UX Simulation</h3>
+<p>Test navigation clarity and button sizes.</p>
 </div>
 
 </div>
 
 </section>
 
-<!-- HOW IT WORKS -->
 
-<section id="how-it-works" style="background:var(--light);padding:4rem 0">
-
-<div class="container">
-
-<h2 style="text-align:center;margin-bottom:2rem">How AccessiScan Works</h2>
-
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2rem">
-
-<div>
-<h3>1. Generate Personas</h3>
-<p>Nemotron models generate synthetic users representing real accessibility needs.</p>
-</div>
-
-<div>
-<h3>2. Simulate Interaction</h3>
-<p>Each persona interacts with your interface and triggers usability checks.</p>
-</div>
-
-<div>
-<h3>3. Generate Insights</h3>
-<p>Results are aggregated into accessibility dashboards and reports.</p>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- STATS -->
-
-<section class="stats">
-
-<div class="container">
-
-<div>
-<span class="stat-number">10,000+</span>
-<span class="stat-label">Synthetic Personas</span>
-</div>
-
-<div>
-<span class="stat-number">98%</span>
-<span class="stat-label">WCAG Accuracy</span>
-</div>
-
-<div>
-<span class="stat-number">24/7</span>
-<span class="stat-label">Automated Testing</span>
-</div>
-
-</div>
-
-</section>
-
-<!-- CTA -->
-
-<section id="pricing" class="cta-section">
-
-<h2>Ready to Test Your Website?</h2>
-
-<p>Run your first accessibility scan instantly.</p>
-
-</section>
-
-<!-- FOOTER -->
-
-<footer class="footer">
-
-<div class="container">
-
-<div class="footer-section">
-<h4>AccessiScan</h4>
-<p>AI accessibility testing powered by Nemotron models.</p>
-</div>
-
-<div class="footer-section">
-<h4>Contact</h4>
-<p>hello@accessiscan.com</p>
-</div>
-
-</div>
-
+<footer>
+<p>© 2026 AccessiScan</p>
 </footer>
 
-<!-- JAVASCRIPT -->
 
 <script>
 
-/* URL FORM */
+const form = document.getElementById("scan-form")
+const status = document.getElementById("status")
+const resultBox = document.getElementById("result")
 
-document.getElementById("scan-form").addEventListener("submit",function(e){
+form.addEventListener("submit", async function(e){
 
 e.preventDefault()
 
-const url=document.getElementById("website-url").value
+const url = document.getElementById("website-url").value
 
-alert("Scanning: "+url)
+status.innerText = "Running scan..."
+resultBox.style.display = "none"
 
+try{
+
+const response = await fetch("/api/scan",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({url:url})
 })
 
-/* DYSLEXIA MODE */
+const result = await response.json()
 
-const toggle=document.getElementById("dyslexia-toggle")
+status.innerText = "Scan complete"
 
-toggle.addEventListener("click",function(){
+resultBox.style.display = "block"
+resultBox.innerHTML = `
+<strong>Scan Result</strong><br><br>
+Status: ${result.status}<br>
+Text Length: ${result.text_length}<br>
+Screenshot Captured: ${result.screenshot}
+`
 
-document.body.classList.toggle("dyslexia-mode")
+}catch(err){
+
+status.innerText = "Scan failed"
+console.error(err)
+
+}
 
 })
 
 </script>
 
-document.getElementById("scan-form").addEventListener("submit", async function(e){
 
-    e.preventDefault()
-    
-    const url = document.getElementById("website-url").value
-    
-    const response = await fetch("http://127.0.0.1:5000/scan",{
-    
-    method:"POST",
-    headers:{ "Content-Type":"application/json"},
-    body:JSON.stringify({url:url})
-    
-    })
-    
-    const result = await response.json()
-    
-    console.log(result)
-    
-    alert("Scan complete. Check console for persona feedback.")
-    
-    })
 </body>
 </html>
