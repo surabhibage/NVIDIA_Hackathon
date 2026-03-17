@@ -1,0 +1,31 @@
+{
+  "url": "https://example.com",
+  "screenshot_path": "outputs/amazon_screenshot.png",
+  "page_text": "Welcome to our website. Sign up to get started. Click here to continue. Learn more about our services below. This paragraph is long and dense and may be difficult to scan quickly on mobile devices.",
+  "issues": [
+    {
+      "issue_type": "missing_alt_text",
+      "category": "Screen Reader Compatibility",
+      "severity": "high",
+      "count": 3,
+      "description": "3 images are missing alt text.",
+      "evidence": ["<img src='hero.png'>", "<img src='icon.png'>"]
+    },
+    {
+      "issue_type": "long_paragraphs",
+      "category": "Cognitive Accessibility",
+      "severity": "medium",
+      "count": 4,
+      "description": "4 paragraphs exceed 400 characters.",
+      "evidence": ["Dense paragraph section"]
+    },
+    {
+      "issue_type": "low_contrast_text",
+      "category": "Color Accessibility",
+      "severity": "medium",
+      "count": 5,
+      "description": "Some text may fail contrast guidelines.",
+      "evidence": ["Light gray text on white background"]
+    }
+  ]
+}
