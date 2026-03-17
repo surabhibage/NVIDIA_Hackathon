@@ -399,3 +399,28 @@ if __name__ == "__main__":
 
     result = save_agent3_input(example_ingestion_data, output_path="input.json")
     print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
+
+import json
+
+def save_agent3_input(ingestion_data):
+    """
+    Runs accessibility checks and saves output for Agent 3.
+    """
+
+    checker_result = accessibility_checks(ingestion_data)
+
+    output = {
+        "url": ingestion_data.get("url"),
+        "screenshot_path": ingestion_data.get("screenshot_path"),
+        "page_text": ingestion_data.get("page_text") or ingestion_data.get("markdown", ""),
+        "issues": checker_result["issues"]
+    }
+
+    with open("agent3_nemotron/input.json", "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2)
+
+    print("Agent 2 output saved to agent3_nemotron/input.json")
+
+    return output
