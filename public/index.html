@@ -126,47 +126,70 @@
         
         const url = document.getElementById("website-url").value;
         const btn = document.getElementById("submit-btn");
+        const reportArea = document.getElementById("report-display");
         
-        // UI State: Loading
-        btn.innerText = "Scanning Site...";
+        // 1. UI State: Loading
+        btn.innerText = "Ingesting Website...";
         btn.disabled = true;
+        reportArea.innerHTML = "<p>Please wait, capturing visual data and running checks...</p>";
 
         try {
-            // Call the Vercel Serverless Function
+            // 2. Call the Vercel API
             const response = await fetch("/api/scan", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url: url })
             });
             
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Ingestion failed');
 
-            const result = await response.json();
+            const data = await response.json();
             
-            // LOG RESULTS
-            console.log("--- SCAN RESULTS ---");
-            console.log("Markdown summary:", result.markdown);
-            console.log("Images metadata:", result.images);
+            // 3. Pass this entire object to the Nemotron Reasoning pipeline
+            console.log("Nemotron Context Ready:", data);
 
-            // PROCESS DATA FOR USER
-            const imgCount = result.images.length;
-            const badImages = result.images.filter(img => !img.accessible).length;
+            // 4. Update UI to show findings (Screenshot + Issue List)
+            reportArea.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 12px; border: 1px solid #dee2e6; margin-top: 2rem;">
+                    <h2 style="margin-bottom: 1.5rem; color: #0066cc;">Analysis Results</h2>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h3 style="margin-bottom: 10px;">Visual Capture</h3>
+                            <img src="${data.visual_data.screenshot_link}" style="max-width:100%; border-radius:8px; border: 1px solid #ddd;" alt="Website Screenshot">
+                        </div>
+                        
+                        <div>
+                            <h3 style="margin-bottom: 10px;">Automated Checklist Findings</h3>
+                            <ul style="list-style: none;">
+                                ${data.checklist_results.automated_issues.map(issue => `
+                                    <li style="background: #fff5f5; color: #c53030; padding: 10px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #f56565;">
+                                        ⚠️ ${issue}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            
+                            <div style="margin-top: 2rem; padding: 1rem; background: #f0f7ff; border-radius: 8px;">
+                                <strong>Nemotron Pipeline Status:</strong> 
+                                <span style="color: #0066cc;">Ready for Reasoning Agent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-            alert(`Scan Complete for ${url}!\n\n` +
-                  `Images found: ${imgCount}\n` +
-                  `Accessibility Warnings: ${badImages} images missing alt text.\n\n` +
-                  `Check browser console for full markdown content.`);
+            // Auto-scroll to report
+            reportArea.scrollIntoView({ behavior: 'smooth' });
 
-        } catch (error) {
-            console.error("Error during scan:", error);
-            alert("Scan failed. Ensure the URL is public and valid.");
+        } catch (err) {
+            console.error("Scan Error:", err);
+            reportArea.innerHTML = `<p style="color: red;">Error: Could not ingest site. Ensure the URL is valid and the API key is active.</p>`;
         } finally {
-            // UI State: Reset
+            // 5. UI State: Reset
             btn.innerText = "Run Accessibility Scan";
             btn.disabled = false;
         }
     });
 </script>
-
 </body>
 </html>
