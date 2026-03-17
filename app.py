@@ -16,10 +16,10 @@ SAMPLE_INPUT_FILE = "sample_input.json"
 
 
 def call_scan_api(url: str) -> dict:
-    response = requests.post(
+    response = httpx.post(
         SCAN_API_URL,
         json={"url": url},
-        timeout=60
+        timeout=60.0
     )
     response.raise_for_status()
     return response.json()
@@ -111,7 +111,7 @@ def call_nemotron(prompt: str) -> dict:
         "stream": False
     }
 
-    response = requests.post(url, headers=headers, json=payload, timeout=120)
+    response = httpx.post(url, headers=headers, json=payload, timeout=120.0)
     response.raise_for_status()
 
     data = response.json()
